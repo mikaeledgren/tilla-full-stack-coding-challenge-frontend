@@ -13,7 +13,7 @@ export const searchAirports = async (
   query: string,
   page: number = 1,
   limit: number = 50
-): Promise<Airport[]> => {
+): Promise<SearchAirportsResponse> => {
   const regex = new RegExp(query, 'i')
 
   const filteredAirports = airports.filter(
@@ -26,6 +26,23 @@ export const searchAirports = async (
 
   const startIndex = (page - 1) * limit
   const endIndex = startIndex + limit
+  const totalPages = Math.ceil(filteredAirports.length / limit)
+  const totalCount = filteredAirports.length
+  const hasNext = totalCount > endIndex
 
-  return filteredAirports.slice(startIndex, endIndex)
+  return {
+    airports: filteredAirports.slice(startIndex, endIndex),
+    hasNext,
+    page,
+    totalPages,
+    totalCount,
+  }
+}
+
+export type SearchAirportsResponse = {
+  page: number
+  totalCount: number
+  totalPages: number
+  hasNext: boolean
+  airports: Airport[]
 }

@@ -4,12 +4,18 @@ import { useState } from 'react'
 
 import Layout from '../components/layout'
 import useApiData from '../hooks/use-api-data'
-import Airport from '../types/airport'
+import { SearchAirportsResponse } from '../models/airport'
 
 const Page: NextPage = () => {
+  const [page, setPage] = useState(1)
   const [query, setQuery] = useState<string>('')
 
-  const airports = useApiData<Airport[]>(`/api/airports/${query}`, [], [query])
+  const response = useApiData<SearchAirportsResponse>(
+    `/api/airports${query ? `/${query}?page=${page}` : ''}`,
+    {},
+    [query, page]
+  )
+  const airports = response?.airports || []
 
   return (
     <Layout>
@@ -41,6 +47,13 @@ const Page: NextPage = () => {
             <span className="ml-auto text-gray-500">{airport.country}</span>
           </Link>
         ))}
+      </div>
+
+      <div className="flex gap-2 py-4">
+        {response.totalPages > 1 &&
+          Array.from({ length: response.totalPages }, (_, i) => (
+            <button onClick={() => setPage(i + 1)}>{i + 1}</button>
+          ))}
       </div>
     </Layout>
   )
