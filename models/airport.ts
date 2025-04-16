@@ -10,19 +10,23 @@ export const allAirports = async (): Promise<Airport[]> => {
 }
 
 export const searchAirports = async (
-  query: string,
+  query: string | undefined,
   page: number = 1,
-  limit: number = 50
+  limit: number = 20
 ): Promise<SearchAirportsResponse> => {
-  const regex = new RegExp(query, 'i')
+  let filteredAirports = airports
 
-  const filteredAirports = airports.filter(
-    (airport) =>
-      regex.test(airport.iata) ||
-      regex.test(airport.name) ||
-      regex.test(airport.city) ||
-      regex.test(airport.country)
-  )
+  if (query) {
+    const regex = new RegExp(query, 'i')
+
+    filteredAirports = airports.filter(
+      (airport) =>
+        regex.test(airport.iata) ||
+        regex.test(airport.name) ||
+        regex.test(airport.city) ||
+        regex.test(airport.country)
+    )
+  }
 
   const startIndex = (page - 1) * limit
   const endIndex = startIndex + limit
