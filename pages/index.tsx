@@ -13,7 +13,8 @@ const Page: NextPage = () => {
   const response = useApiData<SearchAirportsResponse>(
     `/api/airports${query ? `/${query}?page=${page}` : ''}`,
     {},
-    [query, page]
+    [query, page],
+    1000
   )
   const airports = response?.airports || []
 
@@ -52,7 +53,9 @@ const Page: NextPage = () => {
       <div className="flex gap-2 py-4">
         {response.totalPages > 1 &&
           Array.from({ length: response.totalPages }, (_, i) => (
-            <button onClick={() => setPage(i + 1)}>{i + 1}</button>
+            <button key={i} onClick={() => setPage(i + 1)}>
+              {i + 1}
+            </button>
           ))}
       </div>
     </Layout>
